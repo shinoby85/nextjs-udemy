@@ -1,5 +1,12 @@
+import Post from "./components/Post.jsx";
+
 function App() {
-  return <h1>Hello World!</h1>;
+    return (
+        <main>
+            <h1>Hello World!</h1>
+            <Post/>
+        </main>
+    );
 }
 
 export default App;
