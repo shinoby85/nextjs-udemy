@@ -1,11 +1,18 @@
 import Post from "./Post.jsx";
 import styles from "./PostsList.module.css"
+import NewPost from "./NewPost.jsx";
+import {useState} from "react";
 
-function PostsList({users}) {
+function PostsList({users, onBodyChange}) {
+    const [userPost, setUserPost] = useState(null);
+
     return (
-        <ul className={styles.posts}>
-            {users.map(user => <Post key={user.id} author={user.name} body={user.text}/>)}
-        </ul>
+        <>
+            <NewPost userPost={userPost} onBodyChange={valueChange => onBodyChange(userPost.id, valueChange)}/>
+            <ul className={styles.posts}>
+                {users.map(user => <Post key={user.id} user={user} setUserPost={setUserPost}/>)}
+            </ul>
+        </>
     )
 }
 

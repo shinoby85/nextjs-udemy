@@ -1,10 +1,10 @@
 import styles from "./Post.module.css";
 
-export default function Post({author, body}) {
+export default function Post({user, setUserPost}) {
     return (
-        <div className={styles.post}>
-            <p className={styles.author}>{author}</p>
-            <p className={styles.text}>{body}</p>
-        </div>
+        <li className={styles.post} onClick={() => setUserPost(user)}>
+            <p className={styles.author}>{user.name}</p>
+            <p className={styles.text}>{user.text}</p>
+        </li>
     );
 }
