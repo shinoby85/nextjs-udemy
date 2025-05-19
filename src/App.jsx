@@ -1,11 +1,23 @@
-import Post from "./components/Post.jsx";
+import PostsList from "./components/PostsList.jsx";
+
+const users = [
+    {
+        id: 1,
+        name: "Alex Developer",
+        text: "I like ReactJs",
+    },
+    {
+        id: 2,
+        name: "Ann QA",
+        text: "This is my first application",
+    }
+];
 
 function App() {
     return (
         <main>
             <h1>Hello World!</h1>
-            <Post author="Zhenya" body="I like ReactJs"/>
-            <Post author="Ann" body="I like English"/>
+            <PostsList users={users}/>
         </main>
     );
 }
