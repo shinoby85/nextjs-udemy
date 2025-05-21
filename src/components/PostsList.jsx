@@ -10,6 +10,7 @@ function PostsList({users, onBodyChange, isShowModal, onEditPost, onClose, userP
             <Modal onClose={onClose}>
                 <NewPost
                     userPost={userPost}
+                    onCancel={onClose}
                     onBodyChange={valueChange => onBodyChange(userPost.id, valueChange)}
                 />
             </Modal>)}

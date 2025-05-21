@@ -1,7 +1,7 @@
 import classes from './NewPost.module.css';
 import {useEffect, useState} from "react";
 
-function NewPost({userPost, onBodyChange}) {
+function NewPost({userPost, onBodyChange, onCancel}) {
     const [textValue, setTextValue] = useState('');
     const [userName, setUserName] = useState('');
 
@@ -29,7 +29,7 @@ function NewPost({userPost, onBodyChange}) {
                        onChange={e => setUserName(e.target.value)}/>
             </p>
             <div className={classes.actions}>
-
+                <button type="button" onClick={onCancel}>Cancel</button>
                 <button>Submit</button>
             </div>
         </form>
