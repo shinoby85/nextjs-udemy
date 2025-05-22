@@ -11,7 +11,7 @@ function PostsList({users, onBodyChange, isShowModal, onEditPost, onClose, userP
                 <NewPost
                     userPost={userPost}
                     onCancel={onClose}
-                    onBodyChange={valueChange => onBodyChange(userPost.id, valueChange)}
+                    onBodyChange={valueChange => onBodyChange(valueChange)}
                 />
             </Modal>)}
         <ul className={styles.posts}>

@@ -8,24 +8,27 @@ function NewPost({userPost, onBodyChange, onCancel}) {
     function formBlurHandler(e) {
         e.preventDefault();
         const data = new FormData(e.target);
-        onBodyChange({name: data.get('name'), text: data.get('text')});
+        onBodyChange({
+            author: data.get('author'),
+            body: data.get('body'),
+            ...(!!userPost.id ? {id: userPost.id} : {})
+        });
     }
 
     useEffect(() => {
-        setTextValue(userPost?.text);
-        setUserName(userPost?.name);
-    }, [userPost?.name, userPost?.text]);
+        setTextValue(userPost?.body);
+        setUserName(userPost?.author);
+    }, [userPost?.author, userPost?.body]);
     return (
         <form className={classes.form} onSubmit={formBlurHandler}>
             <p>
                 <label htmlFor="body">Text</label>
-                <textarea id="body" name="text" required rows={3} onChange={e => setTextValue(e.target.value)}
+                <textarea id="body" name="body" required rows={3} onChange={e => setTextValue(e.target.value)}
                           value={textValue}/>
             </p>
-            <p>{textValue}</p>
             <p>
                 <label htmlFor="name">Your name</label>
-                <input type="text" id="name" name="name" required value={userName}
+                <input type="text" id="name" name="author" required value={userName}
                        onChange={e => setUserName(e.target.value)}/>
             </p>
             <div className={classes.actions}>

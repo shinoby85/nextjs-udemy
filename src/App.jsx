@@ -16,12 +16,21 @@ const users = [
 ];
 
 function App() {
-    const [allUsers, setAllUsers] = useState(users);
+    const [allUsers, setAllUsers] = useState([]);
     const [isCreatePost, setCreatePost] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editPost, setEditPost] = useState(null);
 
     useEffect(() => {
+        (async function fetchPosts() {
+            const response = await fetch("http://localhost:8080/posts");
+            const data = await response.json();
+            setAllUsers(data.posts);
+        })();
+    }, []);
+
+    useEffect(() => {
+
         if (editPost && !isCreatePost) {
             setShowModal(true);
         }
@@ -37,28 +46,33 @@ function App() {
     }, [editPost, isCreatePost]);
 
 
-    function bodyChangeHandler(id, valueChange) {
-        setAllUsers(oldAllUsers => {
-            hideModalHandler();
-            if (isCreatePost) {
-                setCreatePost(false);
-                const newUser = {
-                    ...editPost,
-                    ...valueChange
-                };
-                return [
-                    ...oldAllUsers,
-                    newUser
-                ];
-            }
-            return oldAllUsers.map(user => {
-                if (user.id === id) {
-                    return {...user, ...valueChange};
-                }
-                return user;
-            });
-
-        });
+    function bodyChangeHandler(valueChange) {
+        hideModalHandler();
+        if (isCreatePost) {
+            (async function addPost() {
+                const response = await fetch("http://localhost:8080/posts", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(valueChange)
+                });
+                const data = await response.json();
+                setAllUsers(oldAllUsers => ([...oldAllUsers, data.post]));
+            })();
+        } else {
+            (async function addPost() {
+                const response = await fetch("http://localhost:8080/update-post", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(valueChange)
+                });
+                const data = await response.json();
+                setAllUsers(data.posts);
+            })();
+        }
     }
 
     function hideModalHandler() {
