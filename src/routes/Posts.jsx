@@ -1,6 +1,6 @@
-import PostsList from "./components/PostsList.jsx";
+import PostsList from "../components/PostsList.jsx";
 import {useEffect, useState} from "react";
-import MainHeader from "./components/MainHeader.jsx";
+import {Outlet} from "react-router-dom";
 
 const users = [
     {
@@ -15,35 +15,29 @@ const users = [
     }
 ];
 
-function App() {
+function Posts() {
     const [allUsers, setAllUsers] = useState([]);
-    const [isCreatePost, setCreatePost] = useState(false);
+    // const [isCreatePost, setCreatePost] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [editPost, setEditPost] = useState(null);
+    const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
         (async function fetchPosts() {
+            setIsFetching(true);
             const response = await fetch("http://localhost:8080/posts");
             const data = await response.json();
             setAllUsers(data.posts);
+            setIsFetching(false);
         })();
     }, []);
 
     useEffect(() => {
 
-        if (editPost && !isCreatePost) {
+        if (editPost) {
             setShowModal(true);
         }
-        if (isCreatePost && !editPost) {
-            setEditPost({
-                id: allUsers.length !== 0 ? allUsers.length : 0,
-                name: "",
-                text: ""
-            });
-            setShowModal(true);
-
-        }
-    }, [editPost, isCreatePost]);
+    }, [editPost]);
 
 
     function bodyChangeHandler(valueChange) {
@@ -78,25 +72,30 @@ function App() {
     function hideModalHandler() {
         setShowModal(false);
         setEditPost(null);
-        setCreatePost(false);
+        // setCreatePost(false);
     }
 
-    function createPostHandler() {
-        setCreatePost(true);
-    }
+    // function createPostHandler() {
+    //     setCreatePost(true);
+    // }
 
-    return (
-        <main>
-            <MainHeader onCreatePost={createPostHandler}/>
-            <PostsList
-                users={allUsers}
-                userPost={editPost}
-                onEditPost={setEditPost}
-                onBodyChange={bodyChangeHandler}
-                onClose={hideModalHandler}
-                isShowModal={showModal}/>
-        </main>
+    return (<>
+            <Outlet/>
+            <main>
+                {/*<MainHeader onCreatePost={createPostHandler}/>*/}
+                {!isFetching ? (
+                    <PostsList
+                        users={allUsers}
+                        userPost={editPost}
+                        onEditPost={setEditPost}
+                        onBodyChange={bodyChangeHandler}
+                        onClose={hideModalHandler}
+                        isShowModal={showModal}/>
+                ) : <div>Loading...</div>}
+
+            </main>
+        </>
     );
 }
 
-export default App;
+export default Posts;
