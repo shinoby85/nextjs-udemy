@@ -1,29 +1,29 @@
 import classes from './NewPost.module.css';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Modal from "./Modal.jsx";
-import {Link} from "react-router-dom";
+import {Form, Link, redirect, useLoaderData, useSubmit} from "react-router-dom";
 
-function NewPost({userPost, onBodyChange, onCancel}) {
-    const [textValue, setTextValue] = useState('');
-    const [userName, setUserName] = useState('');
+function NewPost() {
 
-    function formBlurHandler(e) {
-        e.preventDefault();
-        const data = new FormData(e.target);
-        onBodyChange({
-            author: data.get('author'),
-            body: data.get('body'),
-            ...(!!userPost.id ? {id: userPost.id} : {})
+    const submit = useSubmit();
+    const post = useLoaderData();
+    const [textValue, setTextValue] = useState(post?.body || '');
+    const [userName, setUserName] = useState(post?.author || '');
+
+    function handlerSubmit(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        if (post?.id) {
+            formData.append("id", post.id);
+        }
+        submit(formData, {
+            method: !!post?.id ? "PUT" : "POST",
         });
     }
 
-    useEffect(() => {
-        setTextValue(userPost?.body);
-        setUserName(userPost?.author);
-    }, [userPost?.author, userPost?.body]);
     return (
         <Modal>
-            <form className={classes.form} onSubmit={formBlurHandler}>
+            <Form method={!!post?.id ? "PUT" : "POST"} className={classes.form} onSubmit={handlerSubmit}>
                 <p>
                     <label htmlFor="body">Text</label>
                     <textarea id="body" name="body" required rows={3} onChange={e => setTextValue(e.target.value)}
@@ -36,13 +36,34 @@ function NewPost({userPost, onBodyChange, onCancel}) {
                 </p>
                 <div className={classes.actions}>
                     <Link to="..">
-                        <button type="button" onClick={onCancel}>Cancel</button>
+                        <button type="button">Cancel</button>
                     </Link>
                     <button>Submit</button>
                 </div>
-            </form>
+            </Form>
         </Modal>
     );
 }
 
 export default NewPost;
+
+export async function action({request}) {
+    const method = request.method;
+    const formData = await request.formData();
+    const postData = Object.fromEntries(formData);
+    const url = method === "POST" ? 'posts' : 'update-post';
+    await fetch(`http://localhost:8080/${url}`, {
+        method,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData)
+    });
+    return redirect('/');
+}
+
+export async function loader({params}) {
+    const response = await fetch(`http://localhost:8080/posts/${params.postId}`);
+    const resData = await response.json();
+    return resData.post;
+}
